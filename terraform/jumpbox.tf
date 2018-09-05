@@ -1,9 +1,9 @@
-data "aws_ami" "ubuntu_trusty" {
+data "aws_ami" "jumpbox" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm/ubuntu-trusty-14.04-amd64-server-*"]
+    values = ["jumpbox-ami *"]
   }
 
   filter {
@@ -11,7 +11,7 @@ data "aws_ami" "ubuntu_trusty" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["self"]
 }
 
 resource "aws_security_group" "jumpbox" {
@@ -34,13 +34,8 @@ resource "aws_security_group" "jumpbox" {
   }
 }
 
-resource "aws_key_pair" "admin" {
-  key_name   = "${var.prefix}-admin-key"
-  public_key = "${var.ssh_public_key}"
-}
-
 resource "aws_instance" "jumpbox" {
-  ami           = "${data.aws_ami.ubuntu_trusty.id}"
+  ami           = "${data.aws_ami.jumpbox.id}"
   instance_type = "t2.micro"
   associate_public_ip_address = "true"
   key_name = "${aws_key_pair.admin.key_name}"

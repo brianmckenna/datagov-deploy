@@ -1,4 +1,17 @@
 ---
+- name: update OS
+  apt: upgrade=yes update_cache=yes
+
+- name: install development tools
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - git
+    - python-pip
+    - python-virtualenv
+
+- name: install ansible
+  pip: name=ansible version=2.5.4 state=present
+
 - name: Create the linux account
   user:
     name: "{{ item.username }}"
