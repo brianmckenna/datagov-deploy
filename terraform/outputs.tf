@@ -17,3 +17,7 @@ output "db_pycsw_master" {
 output "db_pycsw_replicas" {
   value = ["${module.db_pycsw.replicas}"]
 }
+
+output "harvester_ips" {
+  value = ["${module.catalog_harvester.instance_ips}"]
+}
