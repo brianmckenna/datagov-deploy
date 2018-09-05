@@ -62,8 +62,7 @@ db_pycsw_replicas = [
 jumpbox_ip = 13.56.207.197
 ```
 
-You can then ssh into the jumpbox you just created. _TODO: use the jumpbox
-playbook and turn this into an AMI._
+You can then ssh into the jumpbox you just created.
 
     $ make jumpbox
     $ sudo apt-get install -y git python-pip python-virtualenv
@@ -72,4 +71,7 @@ playbook and turn this into an AMI._
     $ pip install ansible~=2.5.4
     $ git clone git@github.com:GSA/datagov-deploy.git
 
-_TODO: Generate ansible inventory from terraform output._
+_TODO: Generate ansible inventory from terraform output._ A `hosts` file is
+generated which you can copy to
+
+You can also create specific instances.

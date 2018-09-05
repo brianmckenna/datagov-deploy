@@ -9,5 +9,11 @@ plan:
 apply:
 	terraform apply plan.tfplan
 
-jumpbox:
-	ssh -A -l ubuntu $(shell terraform output | grep jumpbox_ip | cut -d = -f 2)
+hosts:
+	bin/inventory.sh
+
+jumpbox: hosts
+	set -o errexit; \
+	jumpbox_ip="$(shell terraform output --json | jq -r '.jumpbox_ip.value')"; \
+	scp -r inventory "ubuntu@$$jumpbox_ip":. && \
+	ssh -A -l ubuntu "$$jumpbox_ip"
