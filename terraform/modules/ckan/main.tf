@@ -14,8 +14,8 @@ data "aws_ami" "ubuntu_trusty" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_security_group" "catalog" {
-  name        = "${var.prefix}-catalog"
+resource "aws_security_group" "ckan" {
+  name        = "${var.prefix}-ckan"
   description = "Allow web traffic"
   vpc_id      = "${var.vpc_id}"
 
@@ -48,18 +48,55 @@ resource "aws_security_group" "catalog" {
   }
 }
 
-resource "aws_instance" "catalog" {
+resource "aws_instance" "ckan" {
   count         = "${var.count_instances}"
   ami           = "${data.aws_ami.ubuntu_trusty.id}"
   instance_type = "t2.micro"
   associate_public_ip_address = "true"
   key_name = "${var.admin_key_name}"
-  vpc_security_group_ids = ["${aws_security_group.catalog.id}", "${var.security_groups}"]
+  vpc_security_group_ids = ["${aws_security_group.ckan.id}", "${var.security_groups}"]
   subnet_id = "${var.subnet_id}"
 
   tags {
     Terraform = "true"
     Environment = "test"
     Owner = "${var.owner}"
+  }
+}
+
+module "ckan_lb" {
+  source = "terraform-aws-modules/elb/aws"
+  name               = "${var.prefix}-inventory-lb"
+  internal           = false
+  security_groups    = ["${aws_security_group.ckan.id}"]
+  subnets            = ["${var.public_subnets}"]
+
+  // ELB attachments
+  number_of_instances = "${var.count_instances}"
+  instances           = ["${aws_instance.ckan.*.id}"]
+
+  listener = [
+    {
+      instance_port     = "80"
+      instance_protocol = "HTTP"
+      lb_port           = "80"
+      lb_protocol       = "HTTP"
+    },
+  ]
+
+  health_check = [
+    {
+      target              = "HTTP:80/"
+      interval            = 30
+      healthy_threshold   = 2
+      unhealthy_threshold = 2
+      timeout             = 5
+    },
+  ]
+
+  tags = {
+    Terraform   = "true"
+    Owner       = "${var.owner}"
+    Environment = "test"
   }
 }

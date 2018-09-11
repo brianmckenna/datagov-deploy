@@ -1,4 +1,4 @@
-.PHONY: apply clean plan ssh
+.PHONY: apply clean hosts plan ssh
 
 clean:
 	rm plan.tfplan

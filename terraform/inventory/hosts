@@ -3,12 +3,12 @@
 [catalog-web]
 
 [catalog-harvester]
-10.0.1.142
-10.0.1.140
+
 
 [solr]
 
 [inventory-web]
+ip-10-0-1-85.us-west-1.compute.internal
 
 [crm-web]
 
